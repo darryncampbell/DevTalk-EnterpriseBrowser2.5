@@ -1,0 +1,360 @@
+<html>
+<head>
+	<link rel="stylesheet" href="style.css">
+	<script src="ebapi-modules.js"></script>
+	<script src="elements.js"></script>
+	<script>
+		function dwListener(intent)
+		{
+			var data = intent.data["com.symbol.datawedge.data_string"];
+			document.getElementById('output').value = data;
+		}
+		EB.Intent.startListening(dwListener);
+	</script>
+	
+	<script>
+		/* 
+		 * DOMParser HTML extension 
+		 * 2012-02-02 
+		 * 
+		 * By Eli Grey, http://eligrey.com 
+		 * Public domain. 
+		 * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+		 */  
+
+		/*! @source https://gist.github.com/1129031 */  
+		/*global document, DOMParser*/  
+
+		(function(DOMParser) {  
+			"use strict";  
+			var DOMParser_proto = DOMParser.prototype  
+			  , real_parseFromString = DOMParser_proto.parseFromString;
+
+			// Firefox/Opera/IE throw errors on unsupported types  
+			try {  
+				// WebKit returns null on unsupported types  
+				if ((new DOMParser).parseFromString("", "text/html")) {  
+					// text/html parsing is natively supported  
+					return;  
+				}  
+			} catch (ex) {}  
+
+			DOMParser_proto.parseFromString = function(markup, type) {  
+				if (/^\s*text\/html\s*(?:;|$)/i.test(type)) {  
+					var doc = document.implementation.createHTMLDocument("")
+					  , doc_elt = doc.documentElement
+					  , first_elt;
+
+					doc_elt.innerHTML = markup;
+					first_elt = doc_elt.firstElementChild;
+
+					if (doc_elt.childElementCount === 1
+						&& first_elt.localName.toLowerCase() === "html") {  
+						doc.replaceChild(first_elt, doc_elt);  
+					}  
+
+					return doc;  
+				} else {  
+					return real_parseFromString.apply(this, arguments);  
+				}  
+			};  
+		}(DOMParser));
+		//helper Functions
+		var fn = {};
+		
+		/** Empties an element **/
+		fn.empty = function(element) {
+			if (element == null || !(element instanceof HTMLElement)) return;
+			while(element.children.length > 0) {
+				element.removeChild(element.children[0]);
+				//element.childNodes[0].remove();
+			}
+		};
+		
+		/** Calls focus event on element **/
+		fn.fireFocus = function(element) {
+			if(typeof CustomEvent != 'undefined') {
+				var event = new CustomEvent("focus");
+				element.dispatchEvent(event);
+			}
+			else {
+				element.focus();
+			}
+		};
+		
+		fn.supportsOrientationChange = "onorientationchange" in window;
+		fn.orientationEvent = fn.supportsOrientationChange ? "orientationchange" : "resize";
+		
+		var demoManifest = [
+			{'title': 'Barcode', 'class': 'barcode', 'url':'apis/barcode.html'},
+			{'title': 'Battery', 'class': 'battery', 'url':'apis/battery.html'},
+			{'title': 'Imager', 'class': 'camera', 'url':'apis/camera.html'},
+			{'title': 'Hourglass', 'class': 'hourglass', 'url':'apis/hourglass.html'},
+			{'title': 'Key Capture', 'class': 'key', 'url':'apis/key.html'},
+			//{'title': 'Printer', 'class': 'printer', 'url':'apis/printer.html'},
+			{'title': 'Screen', 'class': 'screenorient', 'url':'apis/screen.html'},
+			{'title': 'Signal', 'class': 'signal', 'url':'apis/signal.html'},
+			{'title': 'Signature Capture', 'class': 'signature', 'url':'apis/signature.html'},
+			{'title': 'Timer', 'class': 'timer', 'url':'apis/timer.html'},
+			
+			//{'title': 'Geolocation', 'class': 'geo', 'url':'apis/geo.html'},
+			{'title': 'WebSQL', 'class': 'websql', 'url':'apis/websql.html'},
+			{'title': 'Web Storage', 'class': 'storage', 'url':'apis/storage.html'}
+			//{'title': 'NFC', 'class': 'nfc', 'url':'apis/nfc.html'},
+		];
+	
+		function showMenu() {
+			document.querySelector('body').classList.add('showmenu');
+		}
+		
+		function hideMenu() {
+			document.querySelector('body').classList.remove('showmenu');
+		}
+		
+		function select(listTitle) {
+			var expandedElement = document.querySelector('div.list.expanded');
+			listTitle.parentNode.classList.toggle('expanded');
+			if(expandedElement != null) expandedElement.classList.remove('expanded');
+		}
+		
+		function createCard(item) {
+			var div = document.createElement('div');
+			div.className = 'card ' + item.class;
+			div.id = item.class + '-card';
+			
+			var header = document.createElement('div');
+			header.className = 'header';
+			
+			var icon = document.createElement('span');
+			icon.className = 'icon ' + item.class;
+			
+			header.appendChild(icon);
+			header.appendChild(document.createTextNode(item.title));
+			
+			div.appendChild(header);
+			return div;
+		}
+		
+		function domReadyEvent() {
+			linkLabelWithInput(document);
+		
+			var loadCount = 0;
+			var docFrag = document.createDocumentFragment();
+			
+			//Add the cards
+			demoManifest.forEach(function(item) {			
+				docFrag.appendChild(createCard(item));
+			});
+			document.querySelector('content').appendChild(docFrag);
+			
+			//Load the demo pages		
+			demoManifest.forEach(function(item) {
+				var xhr = new XMLHttpRequest();
+				xhr.open('get', item.url);
+				xhr.onload = function() {
+					var parser = new DOMParser();
+					var newDocument = parser.parseFromString(xhr.responseText, 'text/html');
+					var children = newDocument.querySelector('body').children;
+					var card = document.querySelector('div.card.'+item.class);
+					var i = 0;
+					while(children.length > i) {
+						if(children[i].nodeName == 'SCRIPT') {
+							var script = document.createElement('script');
+							script.textContent = children[0].textContent;
+							document.body.appendChild(script);
+							if(children[i].remove) { 
+								children[i].remove();
+							}
+							else {
+								i++;
+							}
+						}
+						else {
+							card.appendChild(children[i]);
+						}
+					}
+					linkLabelWithInput(card);
+				};
+				xhr.onabort = xhr.onerror = function () {
+					var card = document.querySelector('div.card.' + item.class);
+					docFrag.appendChild(document.createTextNode('Could not load demo'));
+				};
+				//xhr.responseType = 'document'; //Load as XML, doesnt work in WebKit
+				xhr.send();
+			});
+		}
+		
+		function linkLabelWithInput(parent) {
+			var textList = parent.querySelectorAll('div.text-input');
+			for(var i = 0; i < textList.length; i++) {
+				(function(input, label) {
+					input.addEventListener('focus', function() {
+						label.classList.add('active');
+					});
+					input.addEventListener('blur', function() {
+						if(input.value.length < 1) label.classList.remove('active');
+					});
+					input.addEventListener('change', function() {
+						if(input.value.length < 1) {
+							if(this !== document.activeElement) input.classList.remove('active');
+						}
+						else {
+							input.classList.add('active');
+						}
+					});
+				})(textList[i].querySelector('input'), textList[i].querySelector('label'));
+			}
+		}
+		
+		function loadEvent() {
+			setTimeout(function() {document.querySelector('div.list').classList.add('expanded');},380);
+			var lis = document.querySelectorAll('div.list li');
+			for(var i = 0; i < lis.length; i++)
+			{
+				var moduleName = lis[i].dataset.module;
+				(function(moduleName, li) {
+					li.classList.add(moduleName);
+					li.addEventListener('click', function() {
+						showPage(moduleName);
+					});
+				})(moduleName, lis[i]);
+			};
+		}
+		
+		function showPage(name) {
+			var currentlySelected = document.querySelector('div.list ul li.selected');
+			if(currentlySelected == null || currentlySelected.dataset.module != name)
+			{       if(currentlySelected != null) currentlySelected.classList.remove('selected');
+				document.querySelector('div.list ul li.' + name).classList.add('selected');
+				hideMenu();
+				//TODO show page
+				document.querySelector('#' + name + '-card').scrollIntoView(true);
+			}
+			var previouslyselected = currentlySelected;
+                      if(currentlySelected == previouslyselected)
+			{    currentlySelected.classList.remove('selected');
+			     document.querySelector('div.list ul li.' + name).classList.add('selected');
+			     hideMenu();
+			     document.querySelector('#' + name + '-card').scrollIntoView(true);
+                        }
+		}
+		
+		function sanitizeModuleName(name) {
+			return name.replace(' ','-').replace('\t','-');
+		}
+		
+		function resizeEvent(event) {
+			if (window.innerWidth >= 640) hideMenu();
+		}
+		
+		function closeApp() {
+			EB.Application.quit();
+		}
+		
+		window.addEventListener('DOMContentLoaded', domReadyEvent);
+		window.addEventListener('load', loadEvent);
+		window.addEventListener('resize', resizeEvent);
+	</script>
+</head>
+<body>
+<div id="drawer">
+	<header>
+		<h1>Menu</h1>
+	</header>
+	<div class="dropShadow"></div>
+	<div class="list-scroll">
+		<div class="list">
+			<div class="listtitle" onclick="select(this)"><span class="text">EB APIs</span><span class="dropindicator"></span></div>
+			<ul>
+				<!--li>
+					<span class="icon app"></span>
+					<span class="entrytitle">Application</span>
+				</li-->
+				
+				<li data-module="barcode">
+					<span class="icon barcode"></span>
+					<span class="entrytitle">Barcode1</span>
+				</li>
+				<li data-module="battery">
+					<span class="icon battery"></span>
+					<span class="entrytitle">Battery</span>
+				</li>
+				<li data-module="camera">
+					<span class="icon camera"></span>
+					<span class="entrytitle">Imager</span>
+				</li>
+				<li data-module="hourglass">
+					<span class="icon hourglass"></span>
+					<span class="entrytitle">Hourglass</span>
+				</li>	
+				<li data-module="key">
+					<span class="icon key"></span>
+					<span class="entrytitle">Key Capture</span>
+				</li>					
+				<!--li>
+					<span class="icon nfc"></span>
+					<span class="entrytitle">NFC</span>
+				</li-->
+				<!--li data-module="printer">
+					<span class="icon printer"></span>
+					<span class="entrytitle">Printer</span>
+				</li-->
+				<li data-module="screenorient">
+					<span class="icon screenorient"></span>
+					<span class="entrytitle">Screen Orientation</span>
+				</li>
+				<li data-module="signal">
+					<span class="icon signal"></span>
+					<span class="entrytitle">Signal</span>
+				</li>
+				<li data-module="signature">
+					<span class="icon signature"></span>
+					<span class="entrytitle">Signature Capture</span>
+				</li>
+				<li data-module="timer">
+					<span class="icon timer"></span>
+					<span class="entrytitle">Timer</span>
+				</li>
+			</ul>
+		</div>
+		<div class="list">
+			<div class="listtitle" onclick="select(this)"><span class="text">HTML APIs</span><span class="dropindicator"></span></div>
+			<ul>
+				<!--li data-module="geo">
+					<span class="icon geo"></span>
+					<span class="entrytitle">Geolocation</span>
+				</li-->
+				<li data-module="websql">
+					<span class="icon websql"></span>
+					<span class="entrytitle">WebSQL</span>
+				</li>
+				<li data-module="storage">
+					<span class="icon storage"></span>
+					<span class="entrytitle">WebStorage</span>
+				</li>
+				<!--li>
+					<span class="icon audio"></span>
+					<span class="entrytitle">Audio</span>
+				</li>
+				<li>
+					<span class="icon video"></span>
+					<span class="entrytitle">Video</span>
+				</li-->
+			</ul>
+		</div>
+	</div>
+</div>
+<div id="main">
+	<header>
+		<button class="menu" onclick="showMenu()"></button>
+		<h1>Feature Demo Tab 1</h1>
+		<button class="close" onclick="closeApp()"></button>
+	</header>
+	<div class="dropShadow"></div>
+	<content>
+		
+	</content>
+</div>
+<div id="scrim" onclick="hideMenu()"></div>
+</body>
+</html>

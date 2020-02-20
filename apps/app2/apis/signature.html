@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<div class="content">
+			<div class="status-input">
+				<input id="signature-status" type="text" placeholder="Status" style="word-break: break-word;white-space: normal;height:50px;" disabled="disabled"></input>
+			</div>
+			<div id="signature-image">
+				
+			</div>
+			<div class="module-content">
+				<label for="signature-bgcolor">Background Color: </label><input id="signature-bgcolor" type="color" value="#FFFFFF"></input>
+				<label for="signature-pencolor">Pen Color: </label><input id="signature-pencolor" type="color" value="#0FA0DB"></input>
+				<div class="range-input">
+					<label for="signature-penwidth">Pen Width</label>
+					<!--input id="signature-penwidth-range" min="0" max="5" step="1" value="3" type="range" /-->
+					<input id="signature-penwidth-value" type="number" size="1" value="3" />
+				</div>
+			</div>
+			<div class="buttonbar">
+				<div class="flex"></div>
+				<button onclick="signatureDemo.show()" class="highlight">Show</button>
+			</div>
+		</div>
+	</body>
+	<script>
+		var signatureDemo = {};
+		signatureDemo.show = function () {
+			//EB.ScreenOrientation.autoRotate=false;
+			EB.Signature.takeFullScreen({
+				'outputFormat': EB.Signature.OUTPUT_FORMAT_DATAURI,
+				'penWidth': document.querySelector('#signature-penwidth-value').value,
+				'bgColor': document.querySelector('#signature-bgcolor').value,
+				'penColor': document.querySelector('#signature-pencolor').value
+			}, signatureDemo.capturedEvent);
+		};
+		
+		signatureDemo.capturedEvent = function(jsnObj) {
+			EB.ScreenOrientation.autoRotate=true;
+			if(jsnObj.status == 'ok') {
+				var image = document.createElement('img');
+				image.addEventListener('load', signatureDemo.showSignature);
+				image.src = jsnObj.imageUri;
+			}
+			else  {
+				document.querySelector('#signature-image').style.height = 0;
+			}
+			document.querySelector('#signature-status').value = 'Signature Status: ' + jsnObj.status;
+		};
+		
+		signatureDemo.showSignature = function(image) {
+			var imageElement = document.querySelector('#signature-image');
+			imageElement.style.backgroundImage = "url('" + image.target.src + "')";
+			
+			var ratio = image.target.width / imageElement.clientWidth;
+			imageElement.style.height = image.target.height / ratio;
+		};
+		
+		signatureDemo.loadEvent = function() {
+			/*document.querySelector('#signature-penwidth-range').addEventListener('change', function(element) {
+				document.querySelector('#signature-penwidth-value').value = element.target.value;
+			});
+			document.querySelector('#signature-penwidth-value').addEventListener('change', function(element) {
+				document.querySelector('#signature-penwidth-range').value = element.target.value;
+			});*/
+		};
+		
+		signatureDemo.loadEvent();
+	</script>
+</html>

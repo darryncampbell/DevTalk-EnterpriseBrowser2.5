@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<div class="content">
+			<div class="status-input">
+				<input id="signal-status" type="text" readonly="true" placeholder="Status" disabled="disabled"></input>
+			</div>
+			<div class="module-content">
+				<div class="text-input">
+					<label for="signal-strength">Strength</label>
+					<input id="signal-strength" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="signal-adapter">Adapter</label>
+					<input id="signal-adapter" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="signal-mac">MAC</label>
+					<input id="signal-mac" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="signal-ip">IP Address</label>
+					<input id="signal-ip" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="signal-gateway">Gateway</label>
+					<input id="signal-gateway" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="signal-subnet">Subnet</label>
+					<input id="signal-subnet" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="signal-ssid">SSID</label>
+					<input id="signal-ssid" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="signal-dhcp-server">DHCP Server</label>
+					<input id="signal-dhcp-server" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="signal-dhcp-static">DHCP Static</label>
+					<input id="signal-dhcp-static" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="signal-rssi">RSSI</label>
+					<input id="signal-rssi" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="signal-wins">WINS</label>
+					<input id="signal-wins" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+			</div>
+			<div class="buttonbar">
+				<button onclick="signalDemo.showIcon()" class="highlight">Show Icon</button>
+				<button onclick="signalDemo.hideIcon()">Hide Icon</button>
+				<button onclick="signalDemo.stop()">Stop</button>
+				<button onclick="signalDemo.start()" class="highlight">Start</button>
+			</div>
+		</div>
+	</body>
+	<script>
+		var signalDemo = {};
+		signalDemo.showIcon = function() {
+			EB.SignalIndicators.showIcon({
+				//Use default parameters
+			});
+			signalDemo.changeStatus('WLAN Icon Shown');
+		};
+		signalDemo.hideIcon = function() {
+			EB.SignalIndicators.hideIcon();
+			signalDemo.changeStatus('WLAN Icon Hidden');
+		};
+		signalDemo.stop = function() {
+			EB.SignalIndicators.stopWlanStatus();
+			signalDemo.changeStatus('WLAN Signal Updates Stopped');
+		};
+		signalDemo.start = function() {
+			console.log('signal Start');
+			EB.SignalIndicators.wlanStatus(signalDemo.signalEvent);
+			signalDemo.changeStatus('WLAN Signal Updates Started');
+		};
+		signalDemo.signalEvent = function(jsonObj) {
+			console.log('signalEvent');
+			var strength = document.querySelector('#signal-strength');
+			var ssid = document.querySelector('#signal-ssid');
+			var mac = document.querySelector('#signal-mac');
+			var adapter = document.querySelector('#signal-adapter');
+			var dhcpServer = document.querySelector('#signal-dhcp-server');
+			var dhcpStatic = document.querySelector('#signal-dhcp-static');
+			var gateway = document.querySelector('#signal-gateway');
+			var ip = document.querySelector('#signal-ip');
+			var rssi = document.querySelector('#signal-rssi');
+			var subnet = document.querySelector('#signal-subnet');
+			var wins = document.querySelector('#signal-wins');
+			
+			strength.value = jsonObj.signalStrength + '%';
+			ssid.value = jsonObj.essid;
+			mac.value = jsonObj.macAddress;
+			adapter.value = jsonObj.adapterName;
+			dhcpServer.value = jsonObj.dhcpServer;
+			dhcpStatic.value = jsonObj.dhcpStatic;
+			gateway.value = jsonObj.gateway;
+			ip.value = jsonObj.ipAddress;
+			rssi.value = jsonObj.rssi;
+			subnet.value = jsonObj.subnetMask;
+			wins.value = jsonObj.wins;
+			
+			fn.fireFocus(strength);
+			fn.fireFocus(ssid);
+			fn.fireFocus(mac);
+			fn.fireFocus(adapter);
+			fn.fireFocus(dhcpServer);
+			fn.fireFocus(dhcpStatic);
+			fn.fireFocus(gateway);
+			fn.fireFocus(ip);
+			fn.fireFocus(rssi);
+			fn.fireFocus(subnet);
+			fn.fireFocus(wins);
+			
+			signalDemo.changeStatus('WLAN Signal Event Fired');
+		};
+		
+		signalDemo.changeStatus = function(statusMsg) {
+			var status = document.querySelector('#signal-status');
+			status.value = statusMsg;
+			fn.fireFocus(status);	
+		};
+	</script>
+</html>

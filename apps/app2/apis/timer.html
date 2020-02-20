@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<div class="content">
+			<div class="status-input">
+				<input id="timer-status" type="text" readonly="true" placeholder="Status" disabled="disabled"></input>
+			</div>
+			<div class="module-content">
+				<div class="range-input">
+					<label for="timer-delay-value">Duration</label>
+					<!--input type="range" id="timer-delay-range" min="1000" max="10000" step="1000" /-->
+					<input id="timer-delay-value" type="number" min="1000" step="1000" max="10000" class="six" value="5000" />
+				</div>
+			</div>
+			<div class="buttonbar">
+				<button onclick="timerDemo.stop()">Stop</button>
+				<div class="flex"></div>
+				<button onclick="timerDemo.start()" class="highlight">Start</button>
+			</div>
+		</div>
+	</body>
+	<script>
+		var timerDemo = {};
+		timerDemo.stop = function() {
+			document.querySelector('#timer-status').value = 'Timer Stopped';
+			timer.stop();
+		};
+		
+		timerDemo.start = function() {
+			document.querySelector('#timer-status').value = 'Timer Started';
+			var milliSec = document.querySelector('#timer-delay-value').value;
+			timer.interval = milliSec + '';
+			timer.start();
+		};
+		
+		timerDemo.timerEvent = function(timerInfo) {
+			document.querySelector('#timer-status').value = 'Timer Fired at: ' + timerInfo.time;
+		};
+		
+		timerDemo.loadEvent = function() {
+			/*document.querySelector('#timer-delay-range').addEventListener('change', function(element) {
+				document.querySelector('#timer-delay-value').value = element.target.value;
+			});
+			document.querySelector('#timer-delay-value').addEventListener('change', function(element) {
+				document.querySelector('#timer-delay-range').value = element.target.value;
+			});*/
+			timer.timeout = "url('javascript:timerDemo.timerEvent(%json)')";
+		};
+		//not sure why this was commented. uncommenting fixed the bug - 159546
+		setTimeout(timerDemo.loadEvent,1000);
+		
+	</script>
+</html>

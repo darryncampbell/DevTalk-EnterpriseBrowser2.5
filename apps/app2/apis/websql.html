@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<div class="content">
+			<div class="status-input">
+				<input id="websql-status" type="text" placeholder="Status" disabled="disabled"></input>
+			</div>
+			<div class="module-content">
+				<div class="text-input">
+					<label for="websql-input" class="active">Input</label>
+					<input id="websql-input" type="text" value="Hello SQL storage" tabindex="-1"></input>
+				</div>
+				<div class="text-input">
+					<label for="websql-output">Output</label>
+					<input id="websql-output" readonly="true" type="text" tabindex="-1"></input>
+				</div>
+			</div>
+			<div class="buttonbar">
+				<button onclick="websqlDemo.store()">Store</button>
+				<div class="flex"></div>
+				<button onclick="websqlDemo.fetch()">Fetch</button>
+			</div>
+		</div>
+	</body>
+	<script>
+		var websqlDemo = {};
+		
+		websqlDemo.store = function () {
+			var data = document.querySelector('#websql-input').value;
+			  
+			var db = window.openDatabase('SymbolSample', '1.0', 'Symbol sample database', 10240);
+			db.transaction(function(tx)	{
+				tx.executeSql('CREATE TABLE IF NOT EXISTS Symbol (value TEXT)');
+				tx.executeSql('DELETE FROM Symbol');
+				tx.executeSql('INSERT INTO Symbol (value) VALUES (?)', [data],
+				function(tx) {
+					document.querySelector('#websql-status').value = 'WebSQL Data stored';
+				},
+				function(tx, error) {
+					document.querySelector('#websql-status').value = 'ERROR: ' + error.message;
+				}); 
+			});
+		};
+		
+		websqlDemo.fetch = function () {
+			var db = window.openDatabase('SymbolSample', '1.0', 'Symbol sample database', 10240);
+			db.transaction(function(tx) {
+				tx.executeSql('SELECT value FROM Symbol', [],
+				function(tx, results) {
+					var data = results.rows.item(0).value; 
+					var output = document.querySelector('#websql-output');
+					output.value = data;
+					fn.fireFocus(output);
+					document.querySelector('#websql-status').value = 'WebSQL Data retrieved';
+				},
+				function(tx, error)	{
+					document.querySelector('#websql-status').value = 'ERROR: ' + error.message;
+				}); 
+			});
+		};
+	</script>
+</html>

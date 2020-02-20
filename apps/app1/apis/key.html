@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<div class="content">
+			<div class="status-input">
+				<input id="key-status" type="text" placeholder="Status" disabled="disabled"></input>
+			</div>
+			<div class="module-content">
+
+			</div>
+			<div class="buttonbar">
+				<!--button onclick="keyDemo.remap()">Remap Key...</button-->
+				<div class="flex"></div>
+				<button onclick="keyDemo.capTrigger()">Capture Trigger</button>
+				<button onclick="keyDemo.capKey()" class="highlight">Capture Keys</button>
+			</div>
+		</div>
+	</body>
+	<script>
+		var keyDemo = {};
+		
+		keyDemo.capKey = function() {
+			EB.KeyCapture.captureKey(true, 'all', keyDemo.keyCaptured);
+		};
+		
+		keyDemo.capTrigger = function() {
+			EB.KeyCapture.captureTrigger(keyDemo.triggerCaptured);
+		};
+		
+		keyDemo.remap = function() {
+			alert('Not Completed');//TODO
+		};
+		
+		keyDemo.keyCaptured = function(params) {
+			document.querySelector('#key-status').value = 'Key Captured: ' + params.keyValue;
+		};
+		
+		keyDemo.triggerCaptured = function(params) {
+			document.querySelector('#key-status').value = 'Trigger Captured: ' + params.triggerFlag;
+		};
+	</script>
+</html>

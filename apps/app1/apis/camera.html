@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<div class="content">		    
+			<div id="camera-image" align="center">
+				<img src='' id='captured-image'></img>
+			</div>
+			<div class="buttonbar">
+				<div class="flex"></div>
+				<button onclick="cameraDemo.show()">Show Camera</button>
+			</div>
+		</div>
+	</body>
+	<script>
+	
+	    if(EB.System.oemInfo.indexOf("MC9190") != -1 && EB.System.platform != 'ANDROID')
+		{
+		  //platform is not android and device is MC9190
+		  var cameraDemo = {};
+		  cameraDemo.imagerDeviceName = 'img1';
+		
+		  cameraDemo.show = function() {		   
+		  
+			  cameraDemo.setStatus('Imager Enabled');
+			  cameraDemo.rotateEvent();
+			  document.querySelector('#camera-overlay').classList.add('visible-block');
+			  imager.enabled = cameraDemo.imagerDeviceName;
+			
+		    };
+		
+		    cameraDemo.showImage = function(image) {
+			  var imageElement = document.querySelector('#camera-image');
+			  imageElement.style.backgroundImage = "url('" + image.target.src + "')";
+			
+			  var ratio = image.target.width / imageElement.clientWidth;
+			  imageElement.style.height = image.target.height / ratio;
+		    };
+		
+		    cameraDemo.hide = function() {
+			  imager.disable();
+			  document.querySelector('#camera-overlay').classList.remove('visible-block');
+			  cameraDemo.setStatus('Imager Hidden');
+		    };
+		
+		    cameraDemo.capture = function() {
+			  imager.capture();
+		//	setTimeout(cameraDemo.hide, 1000);
+		    };
+		
+		    cameraDemo.captureEvent = function(jsnObj) {
+			  var image = document.createElement('img');
+			  image.addEventListener('load', cameraDemo.showImage);
+			  image.src = jsnObj.imageData;
+			  cameraDemo.setStatus('Image Captured');
+		    };
+		
+		    cameraDemo.setStatus = function(message) {
+			//document.querySelector('#camera-status').value = message;
+		    };
+		
+		    cameraDemo.enumEvent = function(jsnObj) {
+			  console.log('BENKEN enumEvent');
+			  var arr = jsnObj.imagerArray;
+			  cameraDemo.imagerDeviceName = arr[0].deviceName;
+			  for(var i = 0; i < arr.length; i++) {
+				console.log('BENKEN ' + arr[i].friendlyName);
+				if(arr[i].deviceName.indexOf('cam') > -1) {				
+					if(arr[i].friendlyName.indexOf(/*b*/'ack') > -1) {
+						cameraDemo.imagerDeviceName = arr[i].deviceName;
+						return;
+					}
+					if(cameraDemo.imagerDeviceName == 'img1') {
+						cameraDemo.imagerDeviceName = arr[i].deviceName;
+					}
+				 }
+			 }
+		    };
+		
+		    cameraDemo.loadEvent = function() {
+			  var frag = document.createDocumentFragment();
+			  var camOverlay = document.createElement('div');
+			  camOverlay.id = 'camera-overlay';
+			  camOverlay.innerHTML = '<div class="buttonbar bottom"><button onclick="cameraDemo.hide()">Hide</button><div class="flex"></div><button onclick="cameraDemo.capture()" class="highlight">Capture</button></div>';
+			  frag.appendChild(camOverlay);
+			  document.body.appendChild(frag);
+			
+			  imager.imagerCaptureEvent = "url('javascript:cameraDemo.captureEvent(%json)')";
+			  imager.imagerEnumEvent = "url('javascript:cameraDemo.enumEvent(%json)')";
+			  imager.enumerate();
+		    };
+		    cameraDemo.loadEvent();
+		
+		    cameraDemo.rotateEvent = function() {
+			  var min = Math.min(window.screen.availWidth, window.screen.availHeight);
+		
+			  var width = min - 100;
+			  var height = min - 136;
+			  var top = (window.screen.availHeight - height) / 2;
+			  var left = (window.screen.availWidth - width) / 2; 
+			
+			  imager.left = '' + left;
+			  imager.top = '' + top;
+			  imager.width = '' + width;
+			  imager.height = '' + height;
+		    };
+		
+		    window.addEventListener(fn.orientationEvent, cameraDemo.rotateEvent);
+		
+		   
+		}
+		else
+		{
+		  var cameraDemo = {};
+		   function capturedPicture(data)
+		   {	
+			if((data.imageUri != undefined) || (data.imageUri != null)){
+				document.getElementById("captured-image").style.height = "250px";
+				document.getElementById("captured-image").style.width = "250px";
+				document.getElementById("captured-image").src = data.imageUri;	
+			}else{
+				document.getElementById("captured-image").style.height = "";
+				document.getElementById("captured-image").style.width = "";
+				document.getElementById("captured-image").src = "";
+			}
+		  }
+		  cameraDemo.show = function() 
+		  {	
+			var cameraObj;
+            cameraObj= EB.Camera.enumerate();
+            if(cameraObj!="" && cameraObj!=null)
+			{
+				EB.Camera.takePicture({'outputFormat':'dataUri'}, capturedPicture);
+			}
+		  };	
+		
+		 
+		
+        }		
+	</script>
+</html>

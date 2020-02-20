@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<div class="content">
+			<div class="status-input">
+				<input id="screen-status" readonly="true" type="text" placeholder="Status" style="word-break: break-word;white-space: normal;height:50px;" disabled="disabled"></input>
+			</div>
+			<div class="module-content">
+				<label for="screen-autorotate">Auto Rotate:</label><input id="screen-autorotate" type="checkbox" checked="checked"></input>
+			</div>
+			<div class="buttonbar">
+				<button onclick="screenOrientationDemo.orient('left')">Left</button>
+				<button onclick="screenOrientationDemo.orient('right')">Right</button>
+				<button onclick="screenOrientationDemo.orient('upside')">Upside Down</button>
+				<button onclick="screenOrientationDemo.orient('normal')" class="highlight">Normal</button>
+			</div>
+		</div>
+	</body>
+	<script>
+		var screenOrientationDemo = {};
+		
+		screenOrientationDemo.orient = function (orientation) {
+			switch(orientation) {
+				case 'left': EB.ScreenOrientation.leftHanded(); break;
+				case 'right': EB.ScreenOrientation.rightHanded();break;
+				case 'upside': EB.ScreenOrientation.upsideDown();break;
+				case 'normal': EB.ScreenOrientation.normal();break;
+				default: break;
+			}
+			document.querySelector('#screen-autorotate').checked = false;
+		}
+		
+		screenOrientationDemo.orientationEvent = function(message) {
+			document.querySelector('#screen-status').value = 'Screen Orientation Event: ' + message;
+		};
+		
+		screenOrientationDemo.setAutoRotate = function (event) {
+			EB.ScreenOrientation.autoRotate = event.target.checked;
+		};
+		
+		screenOrientationDemo.loadEvent = function() {
+			document.querySelector('#screen-autorotate').addEventListener('change', screenOrientationDemo.setAutoRotate);
+			EB.ScreenOrientation.setScreenOrientationEvent(screenOrientationDemo.orientationEvent);
+		};
+		screenOrientationDemo.loadEvent();
+	</script>
+</html>

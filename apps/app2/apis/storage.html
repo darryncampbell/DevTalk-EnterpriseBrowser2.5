@@ -1,0 +1,68 @@
+<html>
+	<body>
+		<div class="content">
+			<div class="status-input">
+				<input id="storage-status" type="text" placeholder="Status" disabled="disabled"></input>
+			</div>
+			<div class="module-content split">
+				<div>
+					<div class="text-input">
+						<label for="storage-local-input" class="active">LocalStorage Input</label>
+						<input id="storage-local-input" type="text" value="Hello LocalStorage" tabindex="-1"></input>
+					</div>
+					<div class="text-input">
+						<label for="storage-local-output" class="active">LocalStorage Output</label>
+						<input id="storage-local-output" readonly="true" type="text" tabindex="-1"></input>
+					</div>
+				</div>
+				<div>
+					<div class="text-input">
+						<label for="storage-session-input" class="active">SessionStorage Input</label>
+						<input id="storage-session-input" type="text" value="Hello SessionStorage" tabindex="-1"></input>
+					</div>
+					<div class="text-input">
+						<label for="storage-session-output" class="active">SessionStorage Output</label>
+						<input id="storage-session-output" readonly="true" type="text" tabindex="-1"></input>
+					</div>
+				</div>
+			</div>
+			<div class="buttonbar">
+				<button onclick="storageDemo.localStore()">Local Store</button>
+				<button onclick="storageDemo.localFetch()">Local Fetch</button>
+				<button onclick="storageDemo.sessionStore()">Session Store</button>
+				<button onclick="storageDemo.sessionFetch()">Session Fetch</button>
+			</div>
+		</div>
+	</body>
+	<script>
+		var storageDemo = {};
+		
+		storageDemo.localStore = function() {
+			window.localStorage.setItem('data', document.querySelector('#storage-local-input').value);
+			storageDemo.setStatus('LocalStorage set');
+		};
+		
+		storageDemo.localFetch = function() {
+			var output = document.querySelector('#storage-local-output');
+			output.value = window.localStorage.getItem('data');
+			fn.fireFocus(output);		
+			storageDemo.setStatus('LocalStorage fetched');
+		};		
+		
+		storageDemo.sessionStore = function() {
+			window.sessionStorage.setItem('data', document.querySelector('#storage-session-input').value);
+			storageDemo.setStatus('SessionStorage set');
+		};
+		
+		storageDemo.sessionFetch = function() {
+			var output = document.querySelector('#storage-session-output');
+			output.value = window.sessionStorage.getItem('data');
+			fn.fireFocus(output);		
+			storageDemo.setStatus('SessionStorage fetched');
+		};
+		
+		storageDemo.setStatus = function(message) {
+			document.querySelector('#storage-status').value = message;
+		};
+	</script>
+</html>

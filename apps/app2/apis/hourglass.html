@@ -1,0 +1,99 @@
+<html>
+	<body>
+		<div class="content">
+			<div class="module-content">
+				<div class="range-input">
+					<label for="hourglass-left-value">Left</label>
+					<!--input id="hourglass-left-range" type="range" min="0" step="1" /-->
+					<input id="hourglass-left-value" type="number" size="4"></input>
+				</div>
+				<div class="range-input">
+					<label for="hourglass-top">Top</label>
+					<!--input id="hourglass-top-range" type="range" min="0" step="1" /-->
+					<input id="hourglass-top-value" type="number" size="4"></input>
+				</div>
+			</div>
+			<div class="buttonbar">
+				<button onclick="hourglassDemo.hide()">Hide</button>
+				<div class="flex"></div>
+				<button onclick="hourglassDemo.show()" class="highlight">Show</button>
+			</div>
+		</div>
+	</body>
+	<script>
+		var hourglassDemo = {};
+		hourglassDemo.show = function() {
+			var leftValue = document.querySelector('#hourglass-left-value');
+			var topValue = document.querySelector('#hourglass-top-value');
+			
+
+
+			//not sure why thus logic is put
+			//leftValue.value = leftValue.min + (leftValue.max-leftValue.min)/2;
+			//topValue.value = topValue.min + (topValue.max-topValue.min)/2;
+
+			//alert("left value:"+leftValue.value+ " topValue:"+topValue.value);
+
+			hourglass.left = leftValue.value + '';
+			hourglass.top = topValue.value + '';
+
+			hourglass.visibility = 'visible';
+		};
+		
+		hourglassDemo.hide = function() {
+			hourglass.visibility = 'hidden';
+		};
+		
+		hourglassDemo.loadEvent = function() {
+			/*document.querySelector('#hourglass-left-range').addEventListener('change', function(element) {
+				document.querySelector('#hourglass-left-value').value = element.target.value;
+				hourglass.left = element.target.value + '';
+			});
+			document.querySelector('#hourglass-left-value').addEventListener('change', function(element) {
+				document.querySelector('#hourglass-left-range').value = element.target.value;
+				hourglass.left = element.target.value + '';
+			});
+			document.querySelector('#hourglass-top-range').addEventListener('change', function(element) {
+				document.querySelector('#hourglass-top-value').value = element.target.value;
+				hourglass.top = element.target.value + '';
+			});
+			document.querySelector('#hourglass-top-value').addEventListener('change', function(element) {
+				document.querySelector('#hourglass-top-range').value = element.target.value;
+				hourglass.top = element.target.value + '';
+			});*/
+
+			hourglassDemo.rotateEvent();
+			
+			//var leftRange = document.querySelector('#hourglass-left-range');
+			//var topRange = document.querySelector('#hourglass-top-range');
+			var leftValue = document.querySelector('#hourglass-left-value');
+			var topValue = document.querySelector('#hourglass-top-value');
+			
+			leftValue.value = leftValue.min + (leftValue.max-leftValue.min)/2;
+			topValue.value = topValue.min + (topValue.max-topValue.min)/2;
+			
+			//leftRange.value = leftValue.value;
+			//topRange.value = topValue.value;
+			
+			hourglass.left = leftValue.value + '';
+			hourglass.top = topValue.value + '';
+		};
+		
+		hourglassDemo.rotateEvent = function() {
+			//var leftRange = document.querySelector('#hourglass-left-range');
+			//var topRange = document.querySelector('#hourglass-top-range');
+			
+			//leftRange.max = window.screen.availWidth;
+			//topRange.max = window.screen.availHeight;
+			
+			var leftValue = document.querySelector('#hourglass-left-value');
+			var topValue = document.querySelector('#hourglass-top-value');
+			
+			leftValue.max = window.screen.availWidth;
+			topValue.max = window.screen.availHeight;
+		};
+		//setTimeout(hourglassDemo.loadEvent, 1000);
+
+		window.addEventListener(fn.orientationEvent, hourglassDemo.rotateEvent);
+	</script>
+</html>

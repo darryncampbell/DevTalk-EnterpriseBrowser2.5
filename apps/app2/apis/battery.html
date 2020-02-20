@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<div class="content">
+			<div class="status-input">
+				<input id="battery-status" type="text" readonly="true" placeholder="Status" disabled="disabled"></input>
+			</div>
+			<div class="module-content">
+				<div id="battery-icon">
+				
+				</div>
+			</div>
+			<div class="buttonbar">
+				<button onclick="batteryDemo.showIcon()" class="highlight">Show Icon</button>
+				<button onclick="batteryDemo.hideIcon()">Hide Icon</button>
+				<button onclick="batteryDemo.stop()">Stop</button>
+				<button onclick="batteryDemo.start()" class="highlight">Start</button>
+			</div>
+		</div>
+	</body>
+	<script>
+		var batteryDemo = {};
+		batteryDemo.showIcon = function() {
+			EB.Battery.showIcon({
+				//Use default parameters
+			});
+			batteryDemo.changeStatus('Battery Icon Shown');
+		};
+		batteryDemo.hideIcon = function() {
+			EB.Battery.hideIcon();
+			batteryDemo.changeStatus('Battery Icon Hidden');
+		};
+		batteryDemo.stop = function() {
+			EB.Battery.stopBatteryStatus();
+			batteryDemo.changeStatus('Battery Updates Stopped');
+		};
+		batteryDemo.start = function() {
+			console.log('battery Start');
+			EB.Battery.batteryStatus({
+				//Use default parameters
+			}, batteryDemo.batteryEvent);
+			batteryDemo.changeStatus('Battery Updates Started');
+		};
+		batteryDemo.batteryEvent = function(jsonObj) {
+			console.log('batteryEvent');
+			console.log(JSON.stringify(jsonObj));
+			
+			var batteryIcon = document.querySelector('#battery-icon');
+			
+			if(jsonObj.batteryLifeKnown != undefined && jsonObj.batteryLifeKnown) {
+				batteryIcon.className = 'unknown';
+			}
+			
+			var chargingSuffix = ''
+			if(jsonObj.acLineStatus) {
+				chargingSuffix = 'c';
+			}
+			
+			if(jsonObj.batteryLifePercent > 75) {
+				batteryIcon.className = 'b100' + chargingSuffix;
+			}
+			else if(jsonObj.batteryLifePercent > 50) {
+				batteryIcon.className = 'b75' + chargingSuffix;
+			}
+			else if(jsonObj.batteryLifePercent > 25) {
+				batteryIcon.className = 'b50' + chargingSuffix;
+			}
+			else {
+				batteryIcon.className = 'b25' + chargingSuffix;
+			}
+
+			batteryDemo.changeStatus('Battery Event Fired');
+		};
+		
+		batteryDemo.changeStatus = function(statusMsg) {
+			var status = document.querySelector('#battery-status');
+			status.value = statusMsg;
+		};
+	</script>
+</html>
