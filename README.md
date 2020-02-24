@@ -35,5 +35,5 @@ py -m http.server 8081
 * Start test server from the root of the github repo on port 8081 (You can change this number but it must match the value defined in tabbar.xml)
 * Push the Config.xml file to the device that enables the tabbar.  You can find this in [repo_root]/tabbar/configs/Config.xml. `adb push Config.xml /storage/emulated/0/Android/data/com.symbol.enterprisebrowser/Config.xml`
 * Push the tabbar.xml file to the device `adb push tabbar.xml /storage/emulated/0/Android/data/com.symbol.enterprisebrowser/tabbar.xml`
-WORK IN PROGRESS:
-* Copy the icon files to the device `adb push tabbar/icons /storage/emulated/0/Android/data/com.symbol.enterprisebrowser/`
+
+

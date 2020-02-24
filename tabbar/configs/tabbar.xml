@@ -5,11 +5,10 @@
         <backgroundColor>false</backgroundColor>
             <Tab>
                 <action>http://192.168.0.2:8081/apps/app1/feature-demo.html</action>
-                <label></label>
+                <label>Feature Demo Tab 1</label>
                 <disabled></disabled>
                 <reload>false</reload>
 				<selectedColor>#A4DBF1</selectedColor>
-				<icon>barcode.jpg</icon>
             </Tab>
             <Tab>
                 <action>http://192.168.0.2:8081/apps/app2/feature-demo.html</action>
@@ -17,6 +16,6 @@
                 <disabled></disabled>
                 <reload>false</reload>
 				<selectedColor>#f1a4b9</selectedColor>
-				<icon>barcode.jpg</icon>
+
             </Tab>
     </TabGroup> 
