@@ -20,7 +20,7 @@ py -m http.server 8081
 * Create shortcuts using the shortcut tool (two tabs)
   * Configs and icons for each app can be found under [repo_root]/configs/app1 and /app2
 
-![Configuration tool](https://raw.githubusercontent.com/darryncampbell/DevTalk-EnterpriseBrowser-2.5/master/media/shortcut%20creation.png)
+![Configuration tool](https://raw.githubusercontent.com/darryncampbell/DevTalk-EnterpriseBrowser-2.5/master/media/shortcut_creation.png)
 
 * Push the shortcuts to the Android device using the shortcut tool
 * Launch Enterprise Browser
