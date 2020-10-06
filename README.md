@@ -1,3 +1,6 @@
+*Please be aware that this application / sample is provided as-is for demonstration purposes without any guarantee of support*
+=========================================================
+
 # EnterpriseBrowser-2.5-DevTalk
 Sample apps used in the EnterpriseBrowser 2.5 DevTalk held 20th May 2020
 
